@@ -32,17 +32,23 @@ class RegisteredUserController extends Controller
         $request->validate([
             'fname' => ['required', 'string', 'max:255'],
             'lname' => ['required', 'string', 'max:255'],
-            'email' => ['required', 'string', 'lowercase', 'email', 'max:255', 'unique:'.User::class],
+            'email' => ['required', 'string', 'lowercase', 'email', 'max:255', 'unique:' . User::class],
             'password' => ['required', 'confirmed', Rules\Password::defaults()],
             'role' => ['required', 'string', 'exists:roles,name'],
+            'phone' => ['required', 'string'],
+            'photo' => ['required', 'image', 'mimes:jpeg,png,jpg,gif', 'max:2048'],
         ]);
+        
+        $file = $request->file('photo');
+        $fileName = 'photo_' . time() . '_' . rand(1000, 9999) . '.' . $file->getClientOriginalExtension();
+        $filePath = $file->storeAs('assets/images', $fileName, 'public');
 
         $user = User::create([
             'fname' => $request->fname,
             'lname' => $request->lname,
             'email' => $request->email,
             'password' => Hash::make($request->password),
-            'photo' => $request->photo,
+            'photo' => $filePath,
             'phone' => $request->phone,
         ]);
 
