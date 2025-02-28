@@ -3,13 +3,18 @@
 use App\Http\Controllers\ProfileController;
 use Illuminate\Support\Facades\Route;
 
+use App\Http\Controllers\DriverController;
+
 Route::get('/', function () {
     return view('home');
 });
 
-Route::get('/passenger/reservations', function () {
-    return view('passenger.reservations');
-});
+Route::get('/driver/status', [DriverController::class, 'editAvailability']);
+Route::put('/driver/updateAvailability', [DriverController::class, 'updateAvailability']);
+
+// Route::get('/passenger/reservations', function () {
+//     return view('passenger.reservations');
+// });
 
 Route::get('/dashboard', function () {
     return view('dashboard');
