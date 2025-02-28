@@ -13,12 +13,6 @@ class DriverController extends Controller
     }
 
     public function updateAvailability(Request $request){
-        // dd([
-        //     'id' => Auth::user()->id,
-        //     'availability' => $request->status,
-        //     'latitude' => '0',
-        //     'longitude' => '0'
-        // ]);
         $request->validate([
             'status' => 'required|string'
         ]);
@@ -37,5 +31,12 @@ class DriverController extends Controller
         }
 
         return back()->with('success', 'Updated successfully !');
+    }
+
+    public function getAllAvailable(){
+        $drivers = Driver::with('user')->where('availability', 'available')->get();
+        return response()->json([
+            'drivers' => $drivers
+        ]);
     }
 }
