@@ -4,6 +4,7 @@ use App\Http\Controllers\ProfileController;
 use Illuminate\Support\Facades\Route;
 
 use App\Http\Controllers\DriverController;
+use App\Http\Controllers\HistoryController;
 
 Route::get('/', function () {
     return view('home');
@@ -11,6 +12,11 @@ Route::get('/', function () {
 
 Route::get('/driver/status', [DriverController::class, 'editAvailability']);
 Route::put('/driver/updateAvailability', [DriverController::class, 'updateAvailability']);
+
+Route::get('/driver/history', [HistoryController::class, 'driverHistory']);
+Route::get('/driver/reservation/accept/{id}', [HistoryController::class, 'acceptReservation']);
+Route::get('/driver/reservation/reject/{id}', [HistoryController::class, 'rejectReservation']);
+
 
 // Route::get('/passenger/reservations', function () {
 //     return view('passenger.reservations');
