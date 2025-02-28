@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use App\Models\Reservation;
+use Carbon\Carbon;
 
 class HistoryController extends Controller
 {
@@ -23,7 +24,13 @@ class HistoryController extends Controller
 
     public function cancelReservation(Request $request, $id){
         $this->updateStatus($id, 'canceled');
-        return back()->with('success', 'Reservation canceled successfully !');
+        $createdAt = Carbon::parse($reservation->created_at);
+        if ($createdAt->diffInMinutes(Carbon::now()) <= 60) {
+            $this->updateStatus($id, 'canceled');
+            return back()->with('success', 'Reservation canceled successfully!');
+        } else {
+            return back()->with('error', 'Reservations older than 1 hour cannot be canceled.');
+        }
     }
 
     private function updateStatus($id, $status){
