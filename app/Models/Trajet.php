@@ -4,6 +4,8 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
 
+use App\Models\Reservtion;
+
 class Trajet extends Model
 {
     protected $table = 'trajet';
@@ -15,4 +17,8 @@ class Trajet extends Model
         'latitude',
         'reservation_id'
     ];
+
+    public function reservation(){
+        return $this->belongsTo(Reservtion::class, 'reservation_id');
+    }
 }
