@@ -13,7 +13,7 @@ return new class extends Migration
     {
         Schema::create('driver', function (Blueprint $table) {
             $table->foreignId('id')->constrained('users')->onDelete('cascade')->primary();
-            $table->boolean('availability')->default(true);
+            $table->string('availability')->default('unavailable');
             $table->string('longitude');
             $table->string('latitude');
             $table->timestamps();
