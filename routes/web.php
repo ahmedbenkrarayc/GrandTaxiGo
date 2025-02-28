@@ -5,6 +5,7 @@ use Illuminate\Support\Facades\Route;
 
 use App\Http\Controllers\DriverController;
 use App\Http\Controllers\HistoryController;
+use App\Http\Controllers\LocationController;
 
 Route::get('/', function () {
     return view('home');
@@ -16,6 +17,14 @@ Route::put('/driver/updateAvailability', [DriverController::class, 'updateAvaila
 Route::get('/driver/history', [HistoryController::class, 'driverHistory']);
 Route::get('/driver/reservation/accept/{id}', [HistoryController::class, 'acceptReservation']);
 Route::get('/driver/reservation/reject/{id}', [HistoryController::class, 'rejectReservation']);
+
+
+Route::get('/passenger/history', [HistoryController::class, 'passengerHistory']);
+Route::get('/reservation/cancel/{id}', [HistoryController::class, 'cancelReservation']);
+Route::get('/reservation/details/{id}', [HistoryController::class, 'findReservation']);
+
+Route::get('/driver/location/{id}', [LocationController::class, 'getDriverLocation']);
+Route::post('/driver/location', [LocationController::class, 'updateDriverLocation']);
 
 
 // Route::get('/passenger/reservations', function () {
