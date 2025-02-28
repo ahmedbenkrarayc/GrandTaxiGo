@@ -18,7 +18,12 @@ class HistoryController extends Controller
 
     public function rejectReservation(Request $request, $id){
         $this->updateStatus($id, 'rejected');
-        return back()->with('success', 'Reservation accepted successfully !');
+        return back()->with('success', 'Reservation rejected successfully !');
+    }
+
+    public function cancelReservation(Request $request, $id){
+        $this->updateStatus($id, 'canceled');
+        return back()->with('success', 'Reservation canceled successfully !');
     }
 
     private function updateStatus($id, $status){
@@ -33,6 +38,13 @@ class HistoryController extends Controller
     }
 
     public function passengerHistory(){
-        return view('passenger.history');
+        return view('passenger.reservations');
+    }
+
+    public function findReservation(Request $request, $id){
+        $reservation = Reservation::with('trajet', 'driver')->where('id', $id)->first();
+        if(!$reservation)
+            abort(404);
+        return view('passenger.details', compact('reservation'));
     }
 }
