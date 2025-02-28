@@ -4,6 +4,8 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
 
+use App\Models\Reservation;
+
 class Driver extends Model
 {
     protected $table = 'driver';
@@ -15,4 +17,8 @@ class Driver extends Model
         'longitude',
         'latitude'
     ];
+
+    public function reservations(){
+        return $this->hasMany(Reservation::class, 'driver_id');
+    }
 }
