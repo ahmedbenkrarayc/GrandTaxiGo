@@ -26,6 +26,7 @@ Route::get('/reservation/details/{id}', [HistoryController::class, 'findReservat
 Route::get('/driver/location/{id}', [LocationController::class, 'getDriverLocation']);
 Route::post('/driver/location', [LocationController::class, 'updateDriverLocation']);
 
+Route::get('/drivers', [DriverController::class, 'getAllAvailable']);
 
 // Route::get('/passenger/reservations', function () {
 //     return view('passenger.reservations');
