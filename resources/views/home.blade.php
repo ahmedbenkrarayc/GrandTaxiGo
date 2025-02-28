@@ -6,6 +6,7 @@
     <title>Laravel</title>
     @vite(['resources/css/app.css'])
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <script async defer src="https://maps.googleapis.com/maps/api/js?key=AIzaSyDpk2gFMPPC-RIfuepXoWJTMmyEpofTgfo&callback=initMap"></script>
 </head>
 <body class="bg-gray-100">
     <div class="min-h-screen">
@@ -84,55 +85,71 @@
     </div>
 
     <script>
-        // Données de démonstration pour les chauffeurs
-        const chauffeurs = [
-            {
-                id: 1,
-                nom: "Dupont",
-                prenom: "Jean",
-                email: "jean.dupont@email.com",
-                telephone: "+212 6XX-XXXXXX",
-                image: "https://randomuser.me/api/portraits/men/1.jpg"
-            },
-            {
-                id: 2,
-                nom: "Martin",
-                prenom: "Sophie",
-                email: "sophie.martin@email.com",
-                telephone: "+212 6XX-XXXXXX",
-                image: "https://randomuser.me/api/portraits/women/1.jpg"
-            },
-            {
-                id: 3,
-                nom: "Bernard",
-                prenom: "Michel",
-                email: "michel.bernard@email.com",
-                telephone: "+212 6XX-XXXXXX",
-                image: "https://randomuser.me/api/portraits/men/2.jpg"
-            }
-        ];
+        let clientLocation = null;
+        let allDrivers = []; 
+        let filteredDrivers = []; 
 
-        // Fonction pour générer les cartes des chauffeurs
-        function afficherChauffeurs() {
+        function fetchDrivers() {
+            fetch('/drivers')
+                .then(response => response.json())
+                .then(data => {
+                    allDrivers = data.drivers;
+                    if (clientLocation) {
+                        filterDriversByDistance();
+                    }
+                })
+                .catch(error => console.error('Error fetching drivers:', error));
+        }
+
+        function filterDriversByDistance() {
+            const origin = new google.maps.LatLng(clientLocation.lat, clientLocation.lng);
+            const destinations = allDrivers.map(driver => new google.maps.LatLng(driver.latitude, driver.longitude));
+
+            const service = new google.maps.DistanceMatrixService();
+            service.getDistanceMatrix(
+                {
+                    origins: [origin],
+                    destinations: destinations,
+                    travelMode: google.maps.TravelMode.DRIVING,
+                },
+                (response, status) => {
+                    if (status === google.maps.DistanceMatrixStatus.OK) {
+                        filteredDrivers = [];
+
+                        for (let i = 0; i < response.rows[0].elements.length; i++) {
+                            const distance = response.rows[0].elements[i].distance.value / 1000;
+                            if (distance <= 10) {
+                                filteredDrivers.push(allDrivers[i]);
+                            }
+                        }
+
+                        displayDrivers();
+                    } else {
+                        console.error('Error fetching distance matrix data:', status);
+                    }
+                }
+            );
+        }
+
+        function displayDrivers() {
             const container = document.getElementById('chauffeursList');
             container.innerHTML = '';
 
-            chauffeurs.forEach(chauffeur => {
+            filteredDrivers.forEach(driver => {
                 const card = document.createElement('div');
                 card.className = 'bg-white rounded-lg shadow-md overflow-hidden transform transition duration-300 hover:scale-105';
                 card.innerHTML = `
                     <div class="p-4">
                         <div class="flex items-center space-x-4">
-                            <img src="${chauffeur.image}" alt="${chauffeur.prenom} ${chauffeur.nom}" class="w-16 h-16 rounded-full object-cover">
+                            <img src="${driver.user.photo}" alt="${driver.user.fname} ${driver.user.lname}" class="w-16 h-16 rounded-full object-cover">
                             <div>
-                                <h3 class="text-lg font-semibold">${chauffeur.prenom} ${chauffeur.nom}</h3>
-                                <p class="text-gray-600">${chauffeur.email}</p>
-                                <p class="text-gray-600">${chauffeur.telephone}</p>
-                                <p class="text-gray-600">${chauffeur.telephone}</p>
+                                <h3 class="text-lg font-semibold">${driver.user.fname} ${driver.user.lname}</h3>
+                                <p class="text-gray-600">${driver.user.email}</p>
+                                <p class="text-gray-600">${driver.user.phone}</p>
                             </div>
                         </div>
                         <div class="mt-4">
-                            <button onclick="ouvrirModal(${chauffeur.id})" class="w-full bg-indigo-600 text-white px-4 py-2 rounded-lg hover:bg-indigo-700 transition">
+                            <button onclick="ouvrirModal(${driver.id})" class="w-full bg-indigo-600 text-white px-4 py-2 rounded-lg hover:bg-indigo-700 transition">
                                 Réserver
                             </button>
                         </div>
@@ -142,12 +159,16 @@
             });
         }
 
-        // Gérer la géolocalisation
         document.getElementById('getLocation').addEventListener('click', () => {
             if (navigator.geolocation) {
                 navigator.geolocation.getCurrentPosition(
                     (position) => {
-                        alert(`Position trouvée !\nLatitude: ${position.coords.latitude}\nLongitude: ${position.coords.longitude}`);
+                        clientLocation = {
+                            lat: position.coords.latitude,
+                            lng: position.coords.longitude
+                        };
+                        // alert(`Position trouvée ! Latitude: ${clientLocation.lat}, Longitude: ${clientLocation.lng}`);
+                        fetchDrivers();
                     },
                     (error) => {
                         alert('Erreur lors de la récupération de la position.');
@@ -158,8 +179,8 @@
             }
         });
 
-        // Gérer le modal de réservation
-        function ouvrirModal(chauffeurId) {
+        // Modal handling
+        function ouvrirModal(driverId) {
             const modal = document.getElementById('reservationModal');
             modal.classList.remove('hidden');
         }
@@ -180,9 +201,6 @@
                 alert('Veuillez remplir tous les champs.');
             }
         });
-
-        // Initialiser l'affichage des chauffeurs
-        afficherChauffeurs();
     </script>
 </body>
 </html>
