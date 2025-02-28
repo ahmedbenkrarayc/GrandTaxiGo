@@ -10,6 +10,7 @@ use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 
 use App\Models\Driver;
+use App\Models\Reservation;
 
 class User extends Authenticatable implements LaratrustUser
 {
@@ -55,5 +56,9 @@ class User extends Authenticatable implements LaratrustUser
 
     public function driver(){
         return $this->hasOne(Driver::class, 'id');
+    }
+
+    public function reservations(){
+        return $this->hasMany(Reservation::class, 'passenger_id');
     }
 }
