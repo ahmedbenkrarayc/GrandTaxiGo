@@ -3,6 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="csrf-token" content="{{ csrf_token() }}">
     <title>Historique des Courses | WSSlni</title>
     @vite(['resources/css/app.css'])
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
@@ -55,7 +56,7 @@
                                 <td class="px-6 py-4 whitespace-nowrap">
                                     <div class="flex items-center">
                                         <div class="flex-shrink-0 h-10 w-10">
-                                            <img class="h-10 w-10 rounded-full" src="https://randomuser.me/api/portraits/women/25.jpg" alt="Amina Khalid">
+                                            <img class="h-10 w-10 rounded-full" src="{{ asset('/storage/'.$reservation->passenger->photo) }}" alt="Amina Khalid">
                                         </div>
                                         <div class="ml-4">
                                             <div class="text-sm font-medium text-gray-900">{{ $reservation->passenger->fname.' '.$reservation->passenger->lname }}</div>
@@ -65,11 +66,11 @@
                                 </td>
                                 <td class="px-6 py-4">
                                     <div class="text-sm text-gray-900 mb-1">{{ $reservation->trajet->startPlace }} → {{ $reservation->trajet->destination }}</div>
-                                    <div class="text-xs text-gray-500"><a href="https://www.google.com/maps?q={{ $reservation->trajet->latitude }},{{ $reservation->trajet->longtitude }}">Open Location</a></div>
+                                    <div class="text-xs text-gray-500"><a target="__blink" href="https://www.google.com/maps?q={{ $reservation->trajet->latitude }},{{ $reservation->trajet->longtitude }}">Open Location</a></div>
                                 </td>
                                 <td class="px-6 py-4 whitespace-nowrap">
-                                    <div class="text-sm text-gray-900">{{ split(' ', $reservation->createdAt)[0] }}</div>
-                                    <div class="text-sm text-gray-500">{{ split(' ', $reservation->createdAt)[1] }}</div>
+                                    <div class="text-sm text-gray-900">{{ explode(' ', $reservation->created_at)[0] }}</div>
+                                    <div class="text-sm text-gray-500">{{ explode(' ', $reservation->created_at)[1] }}</div>
                                 </td>
                                 <td class="px-6 py-4 whitespace-nowrap">
                                     <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-blue-100 text-blue-800">
@@ -96,5 +97,6 @@
             </div>
         </main>
     </div>
+    @vite(['resources/js/livelocation.js'])
 </body>
 </html>
